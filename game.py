@@ -2,6 +2,7 @@ import pygame
 import random
 from sys import exit
 import time
+import math
 
 #pygame setup
 pygame.init()
@@ -42,7 +43,6 @@ butcher_knife_surf = pygame.transform.scale(butcher_knife, (228,80))
 butcher_knife_rect = butcher_knife_surf.get_rect(topleft=(40,170))
 butcher_knife_y_pos = 570
 butcher_knife_rect_speed_inc = 2
-
 
 #knife setup
 knife = pygame.image.load('weapons/knife.png').convert_alpha()
@@ -137,8 +137,8 @@ while True:
         if current_time % 10 == 0 and current_time != 0:
             energycube_rect_2 = energycube_enlarged.get_rect(topleft = (120,350))
             screen.blit(energycube_enlarged,energycube_rect_2)
-            energycuberandom = random.randint(0,5)
-            energycubelist = [1,1,2,2,3,4]
+            energycuberandom = random.randint(0,7)
+            energycubelist = [1,1,1,2,2,3,3,4]
             energycubevalue = energycubelist[energycuberandom]
             energycollide = pygame.Rect.colliderect(dinosaur_rect_2, energycube_rect_2)
             if energycollide:
@@ -147,12 +147,16 @@ while True:
                     energycubevalue = energycubelist[energycuberandom]
                     if energycubevalue == 1:
                         print('1')
+                        current_time = current_time * 1.25
                     elif energycubevalue == 2:
                         print('2')
+                        current_time = current_time * 1.5
                     elif energycubevalue == 3:
                         print('3')
+                        current_time = current_time * 0.75
                     elif energycubevalue == 4:
                         print('4')
+                        current_time = current_time * 0.5
                     else:
                         print('error')
             else:
@@ -173,14 +177,19 @@ while True:
             game_active = False
     else:
         # end screen
+        timefortext = pygame.time.get_ticks() / 4 % 1000
+        yfortext_dino = math.sin(timefortext/60) * 40 + 175
+        yfortext_1 = math.sin(timefortext/60) * 40 + 50
+        yfortext_2 = math.sin(timefortext/60) * 40 + 550
+        yfortext_score = math.sin(timefortext/60) * 40 + 110
         screen.blit(background,(-400,-50))
-        screen.blit(dinosaur_image_enlarged,dinosaur_image_rect)
-        screen.blit(text_1_surf, text_1_rect)
-        screen.blit(text_2_surf, text_2_rect)
+        screen.blit(dinosaur_image_enlarged,(285,yfortext_dino))
+        screen.blit(text_1_surf, (100,yfortext_1))
+        screen.blit(text_2_surf, (120,yfortext_2))
         score_present_surf = test_font.render(f"Score: {score_present}", False, "Black")
         score_present_s = pygame.transform.scale_by(score_present_surf, (5,5))
         score_present_rect = score_present_s.get_rect(center = (400,150))
-        screen.blit(score_present_s, score_present_rect)
+        screen.blit(score_present_s, (300,yfortext_score))
         butcher_knife_rect_speed_inc = 2
         knife_rect_speed_inc = 2
         energy_y = 500
