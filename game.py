@@ -1,13 +1,17 @@
 import pygame
 import random
 from sys import exit
-import time
 import math
 
+#change of speed for the knives as game progresses
+changeofspeed = 5
+
 def obstacle_movement(obstacle_list):
+    global changeofspeed
     if obstacle_list:
         for obstacle_rect in obstacle_list:
-            obstacle_rect.y -=  5
+            changeofspeed += 0.00005
+            obstacle_rect.y -= changeofspeed
 
             if obstacle_rect.x == 40:
                 screen.blit(butcher_knife_surf,obstacle_rect)
@@ -22,9 +26,11 @@ def obstacle_movement(obstacle_list):
 def collisions(dinosaur,obstacles):
     if obstacles:
         for obstacle_rect in obstacles:
+            global changeofspeed
             if pygame.Rect.colliderect(dinosaur_rect_2, obstacle_rect):
                 score_present = current_time
                 obstacle_rect.y = random.randint(750,900)
+                changeofspeed = 5
                 return False
     return True 
 
@@ -196,8 +202,6 @@ while True:
 
         #collision
         game_active = collisions(dinosaur_rect_2,obstacle_rect_list)
-
-        
 
     else:
         # end screen
