@@ -4,6 +4,30 @@ from sys import exit
 import time
 import math
 
+def obstacle_movement(obstacle_list):
+    if obstacle_list:
+        for obstacle_rect in obstacle_list:
+            obstacle_rect.y -=  5
+
+            if obstacle_rect.x == 40:
+                screen.blit(butcher_knife_surf,obstacle_rect)
+            elif obstacle_rect.x == 520:
+                screen.blit(knife_surf,obstacle_rect)
+
+        obstacle_list = [obstacle for obstacle in obstacle_list if obstacle.y > -100]
+        
+        return obstacle_list 
+    else: return []
+
+def collisions(dinosaur,obstacles):
+    if obstacles:
+        for obstacle_rect in obstacles:
+            if pygame.Rect.colliderect(dinosaur_rect_2, obstacle_rect):
+                score_present = current_time
+                obstacle_rect.y = random.randint(750,900)
+                return False
+    return True 
+
 #pygame setup
 pygame.init()
 screen = pygame.display.set_mode((800, 700))
@@ -52,6 +76,9 @@ knife_rect = knife_surf.get_rect(topleft=(520,600))
 knife_y_pos = 570
 knife_rect_speed_inc = 2
 
+# list for better enemy logic
+obstacle_rect_list = []
+
 #dinosaur setup
 dinosaur = pygame.image.load('dinosaur/dinosaur.png')
 dinosaur_enlarged = pygame.transform.scale(dinosaur, (87.5,107.5))
@@ -72,6 +99,10 @@ energy_y = 500
 
 #collision for energy cube (boolean flag)
 collision_detected = False
+
+#timer
+obstacle_timer = pygame.USEREVENT + 1
+pygame.time.set_timer(obstacle_timer, 1400)
 
 #while loop
 while True:
@@ -96,9 +127,13 @@ while True:
             # end screen -> starting the game
             if event.type == pygame.KEYDOWN:
                 game_active = True
-                butcher_knife_rect.top = 170
-                knife_rect.top = 600
                 start_time = int(pygame.time.get_ticks() / 1500)
+        if event.type == obstacle_timer and game_active == True:
+            # append to list using if
+            if random.randint(0,1):
+                obstacle_rect_list.append(butcher_knife_surf.get_rect(topleft=(40,random.randint(750,900))))
+            else:
+                obstacle_rect_list.append(knife_surf.get_rect(topleft=(520,random.randint(750,900))))
 
     #game active
     if game_active:
@@ -107,34 +142,24 @@ while True:
         screen.blit(side_wall_1_surf, (0,0))
         screen.blit(side_wall_2_surf, (680,0))
 
-        #knives blitting
-        butcher_knife_rect.y -= butcher_knife_rect_speed_inc
-        butcher_knife_rect_speed_inc +=0.0005
-        if butcher_knife_rect.y <= 0:
-            butcher_knife_rect.y = 700
-        screen.blit(butcher_knife_surf, butcher_knife_rect)
-
-        knife_rect.y -= knife_rect_speed_inc
-        knife_rect_speed_inc +=0.0005
-        if knife_rect.y <= 0:
-            knife_rect.y = 700
-        screen.blit(knife_surf, knife_rect)
-
-        #dinosaur stuff
+        # dinosaur stuff
         dinosaur_rect = pygame.transform.rotate(dinosaur_enlarged, dinosaur_rotation)
         dinosaur_image_flipped = pygame.transform.flip(dinosaur_rect, dinosaur_flipped, False)
         dinosaur_rect_2 = dinosaur_image_flipped.get_rect(topleft = (dinosaur_x, dinosaur_y))
         screen.blit(dinosaur_image_flipped, dinosaur_rect_2)
 
-        #score
+        # knives movement
+        osbtacle_rect_list = obstacle_movement(obstacle_rect_list)
+
+        # score
         current_time = int(pygame.time.get_ticks() / 1500) - start_time
         score_surf = test_font.render(f'{current_time}', False, (255,255,255))
         score_enlarged = pygame.transform.scale_by(score_surf, (5,5))
         score_rect = score_enlarged.get_rect(center =  (400,50))
         screen.blit(score_enlarged,score_rect)
 
-        #energy cube spawning and function
-        if current_time % 10 == 0 and current_time != 0:
+        # energy cube spawning and function
+        if current_time % 5 == 0 and current_time != 0:
             energycube_rect_2 = energycube_enlarged.get_rect(topleft = (120,350))
             screen.blit(energycube_enlarged,energycube_rect_2)
             energycuberandom = random.randint(0,7)
@@ -169,12 +194,11 @@ while True:
         score_rect = score_enlarged.get_rect(center =  (400,50))
         screen.blit(score_enlarged,score_rect)
 
-        #collision with knives
-        collidewithknife = pygame.Rect.colliderect(dinosaur_rect_2, butcher_knife_rect) or pygame.Rect.colliderect(dinosaur_rect_2, knife_rect)
-        if collidewithknife:
-            
-            score_present = current_time
-            game_active = False
+        #collision
+        game_active = collisions(dinosaur_rect_2,obstacle_rect_list)
+
+        
+
     else:
         # end screen
         timefortext = pygame.time.get_ticks() / 4 % 1000
@@ -186,10 +210,6 @@ while True:
         screen.blit(dinosaur_image_enlarged,(285,yfortext_dino))
         screen.blit(text_1_surf, (100,yfortext_1))
         screen.blit(text_2_surf, (120,yfortext_2))
-        score_present_surf = test_font.render(f"Score: {score_present}", False, "Black")
-        score_present_s = pygame.transform.scale_by(score_present_surf, (5,5))
-        score_present_rect = score_present_s.get_rect(center = (400,150))
-        screen.blit(score_present_s, (300,yfortext_score))
         butcher_knife_rect_speed_inc = 2
         knife_rect_speed_inc = 2
         energy_y = 500
