@@ -14,9 +14,9 @@ def obstacle_movement(obstacle_list):
             obstacle_rect.y -= changeofspeed
 
             if obstacle_rect.x == 40:
-                screen.blit(butcher_knife_surf,obstacle_rect)
+                screen.blit(butcher_knife_flip,obstacle_rect)
             elif obstacle_rect.x == 520:
-                screen.blit(knife_surf,obstacle_rect)
+                screen.blit(knife_flip,obstacle_rect)
 
         obstacle_list = [obstacle for obstacle in obstacle_list if obstacle.y > -100]
         
@@ -32,7 +32,6 @@ def collisions(dinosaur,obstacles):
                 score_present = current_time
                 obstacle_rect.y = random.randint(750,900)
                 changeofspeed = 5
-                print("score", score_present)
                 return False
     return True 
 
@@ -70,9 +69,10 @@ side_wall_2_flipped = pygame.transform.flip(side_wall_2, True, False)
 side_wall_2_surf = pygame.transform.scale(side_wall_2_flipped, (120,700))
 
 # butcher knife setup
-butcher_knife = pygame.image.load('weapons/butcherknife.png')
+butcher_knife = pygame.image.load('weapons/butcherknife2.png')
 butcher_knife_surf = pygame.transform.scale(butcher_knife, (228,80))
-butcher_knife_rect = butcher_knife_surf.get_rect(topleft=(40,170))
+butcher_knife_flip = pygame.transform.flip(butcher_knife_surf, False, True)
+butcher_knife_rect = butcher_knife_flip.get_rect(topleft=(40,170))
 butcher_knife_y_pos = 570
 butcher_knife_rect_speed_inc = 2
 
@@ -80,7 +80,8 @@ butcher_knife_rect_speed_inc = 2
 knife = pygame.image.load('weapons/knife.png').convert_alpha()
 knife_boy = pygame.transform.scale(knife, (220,40)).convert_alpha()
 knife_surf = pygame.transform.flip(knife_boy, True, False)
-knife_rect = knife_surf.get_rect(topleft=(520,600))
+knife_flip = pygame.transform.flip(knife_surf, False, True)
+knife_rect = knife_flip.get_rect(topleft=(520,600))
 knife_y_pos = 570
 knife_rect_speed_inc = 2
 
@@ -139,9 +140,9 @@ while True:
         if event.type == obstacle_timer and game_active == True:
             # append to list using if
             if random.randint(0,1):
-                obstacle_rect_list.append(butcher_knife_surf.get_rect(topleft=(40,random.randint(750,900))))
+                obstacle_rect_list.append(butcher_knife_flip.get_rect(topleft=(40,random.randint(750,900))))
             else:
-                obstacle_rect_list.append(knife_surf.get_rect(topleft=(520,random.randint(750,900))))
+                obstacle_rect_list.append(knife_flip.get_rect(topleft=(520,random.randint(750,900))))
 
     #game active
     if game_active:
