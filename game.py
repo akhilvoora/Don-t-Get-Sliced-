@@ -27,10 +27,12 @@ def collisions(dinosaur,obstacles):
     if obstacles:
         for obstacle_rect in obstacles:
             global changeofspeed
+            global score_present
             if pygame.Rect.colliderect(dinosaur_rect_2, obstacle_rect):
                 score_present = current_time
                 obstacle_rect.y = random.randint(750,900)
                 changeofspeed = 5
+                print("score", score_present)
                 return False
     return True 
 
@@ -214,6 +216,10 @@ while True:
         screen.blit(dinosaur_image_enlarged,(285,yfortext_dino))
         screen.blit(text_1_surf, (100,yfortext_1))
         screen.blit(text_2_surf, (120,yfortext_2))
+        score_present_surf = test_font.render(f"Score: {score_present}", False, "Black")
+        score_present_s = pygame.transform.scale_by(score_present_surf, (5,5))
+        score_present_rect = score_present_s.get_rect(center = (400,150))
+        screen.blit(score_present_s, (300,yfortext_score))
         butcher_knife_rect_speed_inc = 2
         knife_rect_speed_inc = 2
         energy_y = 500
